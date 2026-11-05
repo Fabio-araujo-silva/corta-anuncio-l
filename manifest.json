@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Corta Anúncio em L",
+  "version": "1.0",
+  "description": "Detecta o anúncio em L embutido nas transmissões do YouTube (jogo encolhido + propaganda na lateral e embaixo) e dá zoom no jogo.",
+  "permissions": ["storage", "scripting"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "icons": { "16": "icones/16.png", "48": "icones/48.png", "128": "icones/128.png" },
+  "action": {
+    "default_title": "Corta Anúncio em L",
+    "default_popup": "painel.html",
+    "default_icon": { "16": "icones/16.png", "48": "icones/48.png", "128": "icones/128.png" }
+  },
+  "background": { "service_worker": "background.js" },
+  "commands": {
+    "alternar": {
+      "suggested_key": { "default": "Alt+Shift+L" },
+      "description": "Liga/desliga o corte"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["detector.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
