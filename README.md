@@ -4,17 +4,7 @@ Extensão do Chrome que **esconde o anúncio em "L" embutido nas transmissões a
 
 Esse anúncio **não é do YouTube**: ele faz parte da própria imagem da transmissão (é comum na CazéTV, por exemplo). Por isso aparece mesmo com YouTube Premium, e nenhum bloqueador de anúncio consegue tirar. Esta extensão percebe quando o "L" aparece e dá zoom no jogo até ele ocupar o player inteiro. Quando o anúncio sai, o vídeo volta ao normal.
 
-```
-   transmissão com anúncio em L              o que você vê com a extensão
- ┌──────────────────────┬───────┐          ┌──────────────────────────────┐
- │                      │       │          │                              │
- │        JOGO          │ ANÚN- │          │                              │
- │   (encolhido ~79%)   │  CIO  │   ──▶    │            JOGO              │
- │                      │       │          │       (tela inteira)         │
- ├──────────────────────┘       │          │                              │
- │           ANÚNCIO            │          │                              │
- └──────────────────────────────┘          └──────────────────────────────┘
-```
+![Antes e depois: à esquerda, a live com o jogo encolhido e o anúncio em L; à direita, o jogo em tela inteira com a extensão](docs/exemplo.png)
 
 ## Instalação
 
@@ -36,6 +26,8 @@ Funciona sozinha: abra uma live ou um vídeo no YouTube e pronto.
 - **`Alt` + `Shift` + `L`:** liga e desliga sem abrir o painel.
 
 ### Painel
+
+![Painel da extensão e modo debug: o player mostra o jogo em tela inteira e a prévia marca em vermelho o anúncio escondido](docs/painel.png)
 
 - **Extensão ligada:** liga e desliga.
 - **Modo debug:** mostra um quadrinho no canto do player com o status (`vigiando` / `✂ CORTANDO`), as bordas medidas e uma prévia do quadro.
@@ -64,6 +56,10 @@ Os parâmetros foram ajustados numa transmissão completa da CazéTV (2h40, anal
 - **32 trechos cortados, todos anúncio em L ou chamada da CazéTV no mesmo formato.** Os patrocinadores incluem Proforce, Vale, Magalu, Honda e Loterias Caixa.
 - **Nenhum falso positivo.** O layout de estúdio com os narradores, o replay em moldura e as vinhetas ficaram intactos.
 
+## Privacidade
+
+A extensão não coleta, não guarda e não envia nenhum dado. Os quadros do vídeo são lidos e analisados só na memória do navegador. A única coisa salva é a sua preferência (ligada/desligada e modo debug), no armazenamento local do Chrome.
+
 ## Limitações
 
 - **O primeiro segundo de cada anúncio ainda aparece.** A extensão precisa ver o "L" parado em 2 amostras, mais a animação do jogo encolhendo. Cortar antes traria falsos positivos.
@@ -79,3 +75,4 @@ Os parâmetros foram ajustados numa transmissão completa da CazéTV (2h40, anal
 | `content.js` | Roda na página do YouTube: lê os quadros, aplica o corte e desenha o quadrinho de debug |
 | `background.js` | Selo do ícone, atalho de teclado e injeção nas abas que já estavam abertas |
 | `painel.html` / `painel.js` | O painel que abre ao clicar no ícone |
+| `docs/arte.html` | Desenho das imagens do README e da loja (`?tela=1`, `2` e `3`). Não vai no pacote da extensão |

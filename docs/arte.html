@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Corta Anúncio em L — arte</title>
+<!--
+  Arte de divulgação desenhada em HTML/SVG. Gera os PNGs do README e da loja:
+    ?tela=1  antes x depois (1280×800)
+    ?tela=2  painel e modo debug (1280×800)
+    ?tela=3  bloco promocional pequeno da Chrome Web Store (440×280)
+  Patrocinador, canal e placar são fictícios.
+-->
+<style>
+  * { box-sizing: border-box; margin: 0 }
+  body { background: #0e0e12; color: #ecebf0; font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden }
+  .tela { width: 1280px; height: 800px; position: relative; display: none;
+    background: radial-gradient(900px 500px at 50% -10%, #2a1a1d 0%, transparent 70%), #0e0e12 }
+  body[data-tela="1"] #t1, body[data-tela="2"] #t2 { display: block }
+  body[data-tela="3"] #t3 { display: block }
+  svg.q { display: block; width: 100%; height: auto }
+
+  /* ---------- cabeçalho ---------- */
+  .topo { display: flex; align-items: center; gap: 20px; padding: 60px 48px 0 }
+  .topo img { width: 64px; height: 64px; border-radius: 14px }
+  .topo h1 { font-size: 44px; font-weight: 800; letter-spacing: -.5px; line-height: 1 }
+  .topo p { font-size: 19px; color: #a9a6b2; margin-top: 8px }
+
+  /* ---------- player ---------- */
+  .player { position: relative; border-radius: 12px; overflow: hidden; background: #000;
+    box-shadow: 0 18px 50px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06) }
+  .ctrl { position: absolute; left: 0; right: 0; bottom: 0; height: 26%;
+    background: linear-gradient(transparent, rgba(0,0,0,.75)); font-size: var(--u, 13px) }
+  .ctrl .barra { position: absolute; left: 3%; right: 3%; bottom: 3.1em; height: .28em; background: #e62117; border-radius: 2px }
+  .ctrl .barra::after { content: ""; position: absolute; right: -.45em; top: -.36em; width: 1em; height: 1em; border-radius: 50%; background: #e62117 }
+  .ctrl .bt { position: absolute; left: 3%; right: 3%; bottom: .75em; height: 1.7em; display: flex; align-items: center; gap: 1.3em; color: #fff }
+  .ctrl svg { height: 1.45em; width: auto; fill: #fff }
+  .ctrl .vivo { font-weight: 600; font-size: .95em; display: flex; align-items: center; gap: .45em }
+  .ctrl .vivo::before { content: ""; width: .6em; height: .6em; border-radius: 50%; background: #e62117 }
+  .ctrl .dir { margin-left: auto; display: flex; gap: 1.3em }
+
+  /* ---------- tela 1: antes x depois ---------- */
+  .duo { display: grid; grid-template-columns: 568px 1fr 568px; align-items: center; padding: 56px 48px 0 }
+  .rot { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px }
+  .tag { font-size: 14px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; padding: 5px 11px; border-radius: 999px }
+  .tag.ruim { background: rgba(255,90,80,.16); color: #ff7b70 }
+  .tag.bom { background: rgba(80,210,120,.16); color: #6fdc8c }
+  .rot span:last-child { color: #a9a6b2; font-size: 16px }
+  .seta { justify-self: center; width: 46px; height: 46px; border-radius: 50%; background: #e5392d; display: grid; place-items: center;
+    margin-top: 44px; box-shadow: 0 0 0 8px rgba(229,57,45,.15) }
+  .fatos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 60px 48px 0 }
+  .fato { background: #18171d; border: 1px solid #26252d; border-radius: 12px; padding: 18px 20px }
+  .fato b { display: block; font-size: 18px; margin-bottom: 4px }
+  .fato span { color: #a9a6b2; font-size: 15px; line-height: 1.4 }
+
+  /* ---------- tela 2: navegador + painel ---------- */
+  .janela { position: absolute; left: 48px; right: 48px; top: 150px; bottom: 48px; background: #18171d; border-radius: 12px;
+    border: 1px solid #2a2930; box-shadow: 0 18px 50px rgba(0,0,0,.5) }
+  .barra-nav { height: 50px; display: flex; align-items: center; gap: 14px; padding: 0 16px; border-bottom: 1px solid #2a2930 }
+  .bolinhas { display: flex; gap: 7px } .bolinhas i { width: 11px; height: 11px; border-radius: 50%; background: #3a3942 }
+  .url { flex: 1; height: 32px; border-radius: 16px; background: #0f0e13; color: #9c99a5; font-size: 14px; display: flex; align-items: center; padding: 0 16px; gap: 8px }
+  .url b { color: #ecebf0; font-weight: 500 }
+  .icone-ext { position: relative; width: 30px; height: 30px; border-radius: 7px; background: #2a2930; display: grid; place-items: center }
+  .icone-ext img { width: 20px; height: 20px; border-radius: 4px }
+  .icone-ext .selo { position: absolute; right: -6px; bottom: -5px; background: #d33; color: #fff; font-size: 10px; font-weight: 700;
+    border-radius: 4px; padding: 0 3px; line-height: 14px }
+  .peca { width: 20px; height: 20px; fill: #9c99a5 }
+  .conteudo { position: absolute; left: 20px; top: 70px; width: 790px }
+  .titulo-video { margin-top: 14px; font-size: 19px; font-weight: 700 }
+  .canal { margin-top: 6px; color: #9c99a5; font-size: 14px; display: flex; align-items: center; gap: 8px }
+  .canal i { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #2b6bd6, #19a974) }
+
+  #corta-l-debug { position: absolute; top: 10px; left: 10px; z-index: 5; background: rgba(10,10,12,.85); color: #eee; border-radius: 8px;
+    padding: 8px; font: 11px/1.45 Consolas, ui-monospace, monospace; box-shadow: 0 2px 10px rgba(0,0,0,.5); white-space: pre }
+  #corta-l-debug b { color: #ff6b5e }
+  #corta-l-debug .prev { margin-top: 6px; width: 216px; border-radius: 4px; overflow: hidden }
+
+  .popup { position: absolute; right: 14px; top: 58px; width: 320px; background: #1c1b20; border: 1px solid #33313a; border-radius: 10px;
+    padding: 14px; font-size: 13px; line-height: 1.4; box-shadow: 0 16px 40px rgba(0,0,0,.6); z-index: 10 }
+  .popup::before { content: ""; position: absolute; top: -7px; right: 22px; width: 12px; height: 12px; background: #1c1b20;
+    border-left: 1px solid #33313a; border-top: 1px solid #33313a; transform: rotate(45deg) }
+  .popup h2 { font-size: 15px; margin: 0 0 10px }
+  .popup .linha { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #33313a }
+  .popup small { display: block; color: #9c99a5; font-size: 11px }
+  .sw { width: 38px; height: 22px; border-radius: 11px; background: #6fdc8c; position: relative; flex: none }
+  .sw::after { content: ""; position: absolute; top: 3px; left: 19px; width: 16px; height: 16px; border-radius: 50%; background: #fff }
+  .status { margin: 12px 0 8px; background: #25242b; border-radius: 8px; padding: 10px }
+  .status .t { font-weight: 600; display: flex; align-items: center; gap: 7px }
+  .status .t i { width: 9px; height: 9px; border-radius: 50%; background: #ff6b5e }
+  .status .d { color: #9c99a5; font-size: 12px; margin-top: 6px; font-variant-numeric: tabular-nums }
+  .popup .prev { border-radius: 6px; overflow: hidden }
+  .popup figcaption { color: #9c99a5; font-size: 11px; margin-top: 4px }
+  .popup .dica { color: #9c99a5; font-size: 11px; margin-top: 10px }
+  kbd { font: 11px Consolas, monospace; background: #25242b; border: 1px solid #33313a; border-radius: 4px; padding: 0 4px }
+
+  /* ---------- tela 3: bloco promocional 440×280 ---------- */
+  #t3 { width: 440px; height: 280px; overflow: hidden }
+  #t3 .mini { position: absolute; width: 186px; top: 128px; border-radius: 6px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,.5) }
+  #t3 h1 { position: absolute; left: 24px; top: 26px; font-size: 30px; font-weight: 800; line-height: 1.05; letter-spacing: -.3px }
+  #t3 p { position: absolute; left: 24px; top: 98px; color: #a9a6b2; font-size: 13px }
+  #t3 .s { position: absolute; left: 208px; top: 176px; width: 24px; height: 24px; border-radius: 50%; background: #e5392d; display: grid; place-items: center }
+</style>
+</head>
+<body>
+
+<!-- gradientes compartilhados por todos os SVGs da página -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="arq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#151a26"/><stop offset="1" stop-color="#2a3346"/></linearGradient>
+    <linearGradient id="anu" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8a00"/><stop offset="1" stop-color="#ffc21a"/></linearGradient>
+    <linearGradient id="vinheta" x1="0" y1="0" x2="0" y2="1"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>
+    <radialGradient id="massa" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#f6cf72"/><stop offset="1" stop-color="#d9962e"/></radialGradient>
+  </defs>
+</svg>
+
+<!-- ===================== TELA 1 ===================== -->
+<section class="tela" id="t1">
+  <header class="topo">
+    <img src="../icones/128.png" alt="">
+    <div>
+      <h1>Corta Anúncio em L</h1>
+      <p>Esconde o anúncio em L embutido nas lives do YouTube e devolve o jogo pra tela inteira.</p>
+    </div>
+  </header>
+  <div class="duo">
+    <div>
+      <div class="rot"><span class="tag ruim">Sem a extensão</span><span>o jogo encolhe e a propaganda toma o L</span></div>
+      <div class="player" data-quadro="comL" data-sem-controles></div>
+    </div>
+    <div class="seta"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M4 12h14M12 5l7 7-7 7" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div>
+      <div class="rot"><span class="tag bom">Com a extensão</span><span>zoom automático, anúncio fora</span></div>
+      <div class="player" data-quadro="jogo" data-sem-controles></div>
+    </div>
+  </div>
+  <div class="fatos">
+    <div class="fato"><b>Automática</b><span>Procura o L a cada 0,5 s e corta sozinha quando ele aparece.</span></div>
+    <div class="fato"><b>100% local</b><span>Sem IA, sem servidor, sem coletar nada. Só geometria no seu navegador.</span></div>
+    <div class="fato"><b>Volta sozinha</b><span>Quando o anúncio sai, o vídeo volta ao normal na hora.</span></div>
+  </div>
+</section>
+
+<!-- ===================== TELA 2 ===================== -->
+<section class="tela" id="t2">
+  <header class="topo">
+    <img src="../icones/128.png" alt="">
+    <div>
+      <h1>Painel e modo debug</h1>
+      <p>Veja o que está sendo cortado: em vermelho, o anúncio que a extensão escondeu.</p>
+    </div>
+  </header>
+  <div class="janela">
+    <div class="barra-nav">
+      <div class="bolinhas"><i></i><i></i><i></i></div>
+      <div class="url">🔒 <b>youtube.com</b>/watch?v=…</div>
+      <svg class="peca" viewBox="0 0 24 24"><path d="M20.5 11H19V7a2 2 0 0 0-2-2h-4V3.5a2.5 2.5 0 0 0-5 0V5H4a2 2 0 0 0-2 2v3.8h1.5a2.7 2.7 0 0 1 0 5.4H2V20a2 2 0 0 0 2 2h3.8v-1.5a2.7 2.7 0 0 1 5.4 0V22H17a2 2 0 0 0 2-2v-4h1.5a2.5 2.5 0 0 0 0-5z"/></svg>
+      <div class="icone-ext"><img src="../icones/128.png" alt=""><span class="selo">✂</span></div>
+    </div>
+    <div class="conteudo">
+      <div class="player" style="--u:13px" data-quadro="jogo">
+        <div id="corta-l-debug"><b>✂ CORTANDO</b>
+borda vertical   0.789  96%
+borda horizontal 0.792  93%
+parece L? sim  seguidas 2/2  sem L 0/3<div class="prev" data-quadro="previa"></div></div>
+      </div>
+      <div class="titulo-video">BRA × ARG | Eliminatórias — AO VIVO com narração</div>
+      <div class="canal"><i></i>Canal Esporte+ · 48 mil assistindo agora</div>
+    </div>
+    <div class="popup">
+      <h2>✂ Corta Anúncio em L</h2>
+      <div class="linha"><span>Extensão ligada</span><span class="sw"></span></div>
+      <div class="linha"><span>Modo debug<small>quadrinho com status e prévia em cima do vídeo</small></span><span class="sw"></span></div>
+      <div class="status">
+        <div class="t"><i></i>Cortando agora ✂</div>
+        <div class="d">Vídeo 1920×1080 · 4312 quadros analisados<br>Borda vertical 0.789 (96%) · horizontal 0.792 (93%)<br>Parece L? sim · seguidas 2/2</div>
+      </div>
+      <figure>
+        <div class="prev" data-quadro="previa"></div>
+        <figcaption>Sem o corte: em vermelho, o anúncio que está escondido</figcaption>
+      </figure>
+      <p class="dica">Atalho pra ligar/desligar: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TELA 3 ===================== -->
+<section class="tela" id="t3">
+  <h1>Corta<br>Anúncio em L</h1>
+  <p>O jogo de volta pra tela inteira nas lives.</p>
+  <div class="mini" style="left:16px" data-quadro="comL"></div>
+  <div class="s"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M4 12h14M12 5l7 7-7 7" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="mini" style="left:240px" data-quadro="jogo"></div>
+</section>
+
+<script>
+// ---------- gerador determinístico (a arte sai sempre igual) ----------
+function rng(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+// ---------- a transmissão: um jogo de futebol visto pela câmera principal ----------
+function cena() {
+  const r = rng(11);
+  let s = `<rect width="1600" height="262" fill="url(#arq)"/>`;
+  const torcida = ["#f2c230", "#2f6fd6", "#e8e8e8", "#c9433a", "#56607a", "#8a93a8", "#f2c230", "#3c4660"];
+  for (let i = 0; i < 1100; i++) {
+    const x = r() * 1600, y = 6 + r() * 214;
+    s += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(3.5 + r() * 3).toFixed(1)}" fill="${torcida[(r() * torcida.length) | 0]}" opacity="${(.45 + r() * .45).toFixed(2)}"/>`;
+  }
+  for (let y = 40; y < 222; y += 46) s += `<rect y="${y}" width="1600" height="3" fill="#0c1018" opacity=".5"/>`;
+  // placas de LED
+  s += `<rect y="220" width="1600" height="42" fill="#0a1736"/>`;
+  for (let x = 20; x < 1600; x += 330)
+    s += `<text x="${x}" y="250" font-size="26" font-weight="800" fill="#7fb6ff" letter-spacing="3">ESPORTE+ · AO VIVO</text>`;
+  // gramado com faixas de corte (mais largas perto da câmera)
+  let y = 262, h = 30, k = 0;
+  while (y < 900) { s += `<rect y="${y.toFixed(1)}" width="1600" height="${(h + 1).toFixed(1)}" fill="${k % 2 ? "#3b8a3a" : "#449a40"}"/>`; y += h; h *= 1.16; k++; }
+  s += `<g stroke="#f2f5f0" stroke-opacity=".88" stroke-width="4" fill="none">
+    <line x1="0" y1="282" x2="1600" y2="282"/><line x1="800" y1="282" x2="800" y2="900"/>
+    <ellipse cx="800" cy="535" rx="255" ry="108"/>
+    <path d="M0 330 H190 L40 760 H0"/><path d="M1600 330 H1410 L1560 760 H1600"/></g>
+    <circle cx="800" cy="535" r="6" fill="#f2f5f0"/>`;
+  // jogadores: [x, y dos pés, time]
+  const jog = [[1180, 345, "b"], [640, 352, "a"], [430, 410, "b"], [1010, 420, "a"], [1385, 445, "b"], [250, 500, "a"],
+               [720, 480, "b"], [1235, 540, "a"], [560, 610, "b"], [930, 640, "a"], [1460, 690, "b"], [330, 760, "a"]];
+  const cores = { a: ["#f5cf1d", "#1d4fb8"], b: ["#e9f2fb", "#151515"] };
+  jog.sort((p, q) => p[1] - q[1]).forEach(([x, y, t], i) => {
+    const e = .55 + (y - 262) / 640 * 1.15, [cam, cal] = cores[t], pele = ["#8d5a3b", "#c58c5f", "#f0c49a", "#6b4128"][i % 4];
+    s += `<g transform="translate(${x} ${y}) scale(${e.toFixed(2)})">
+      <ellipse cx="6" cy="2" rx="22" ry="5" fill="#000" opacity=".25"/>
+      <rect x="-9" y="-30" width="7" height="30" rx="3" fill="${pele}"/><rect x="2" y="-30" width="7" height="30" rx="3" fill="${pele}"/>
+      <rect x="-9" y="-14" width="7" height="12" fill="#fff"/><rect x="2" y="-14" width="7" height="12" fill="#fff"/>
+      <rect x="-11" y="-42" width="22" height="16" rx="3" fill="${cal}"/>
+      <rect x="-13" y="-70" width="26" height="30" rx="6" fill="${cam}"/>
+      ${t === "b" ? `<rect x="-4" y="-70" width="8" height="30" fill="#8cc4ec"/>` : ""}
+      <rect x="-19" y="-66" width="7" height="20" rx="3" fill="${pele}" transform="rotate(${i % 2 ? 18 : -14} -16 -66)"/>
+      <rect x="12" y="-66" width="7" height="20" rx="3" fill="${pele}" transform="rotate(${i % 2 ? -12 : 20} 16 -66)"/>
+      <circle cy="-80" r="10" fill="${pele}"/></g>`;
+  });
+  s += `<circle cx="895" cy="636" r="10" fill="#fff" stroke="#333" stroke-width="2"/><circle cx="899" cy="644" r="9" fill="#000" opacity=".2"/>`;
+  s += `<rect width="1600" height="900" fill="url(#vinheta)"/>`;
+  // placar e marca do canal (fazem parte da imagem da transmissão)
+  s += `<g transform="translate(36 34)" font-weight="800">
+    <rect width="372" height="56" rx="8" fill="#0d1117" opacity=".93"/>
+    <rect x="6" y="6" width="74" height="44" rx="5" fill="#f5cf1d"/><text x="43" y="38" font-size="25" text-anchor="middle" fill="#123a8c">BRA</text>
+    <text x="134" y="39" font-size="29" text-anchor="middle" fill="#fff">1 × 0</text>
+    <rect x="188" y="6" width="74" height="44" rx="5" fill="#8cc4ec"/><text x="225" y="38" font-size="25" text-anchor="middle" fill="#0d2a45">ARG</text>
+    <text x="318" y="38" font-size="24" text-anchor="middle" fill="#c9cdd6" font-weight="600">67:12</text></g>
+    <g transform="translate(1564 70)" text-anchor="end" font-weight="800" opacity=".88">
+    <text font-size="34" fill="#fff">ESPORTE<tspan fill="#ff4d3d">+</tspan></text>
+    <text y="30" font-size="18" fill="#fff" font-weight="600">● AO VIVO</text></g>`;
+  return s;
+}
+
+// ---------- o anúncio em L (patrocinador fictício) ----------
+function anuncio() {
+  const r = rng(5);
+  let qr = `<rect x="1080" y="728" width="156" height="156" rx="8" fill="#fff"/>`;
+  for (let i = 0; i < 12; i++) for (let j = 0; j < 12; j++)
+    if (r() > .52) qr += `<rect x="${1090 + i * 11.4}" y="${738 + j * 11.4}" width="11.4" height="11.4" fill="#2a1600"/>`;
+  for (const [x, y] of [[1090, 738], [1170, 738], [1090, 818]])
+    qr += `<rect x="${x}" y="${y}" width="56" height="56" fill="#fff"/><rect x="${x + 4}" y="${y + 4}" width="48" height="48" fill="none" stroke="#2a1600" stroke-width="8"/><rect x="${x + 16}" y="${y + 16}" width="24" height="24" fill="#2a1600"/>`;
+  let crimpa = "";
+  for (let a = 0; a <= 180; a += 15) {
+    const t = (180 + a) * Math.PI / 180;
+    crimpa += `<circle cx="${(1432 + 118 * Math.cos(t)).toFixed(1)}" cy="${(420 + 118 * Math.sin(t)).toFixed(1)}" r="9" fill="#c47f22"/>`;
+  }
+  return `<rect width="1600" height="900" fill="url(#anu)"/>
+  <g font-weight="900" text-anchor="middle" fill="#3a1c00">
+    <circle cx="1432" cy="150" r="98" fill="#b3261e"/><circle cx="1432" cy="150" r="86" fill="none" stroke="#ffd36b" stroke-width="4" stroke-dasharray="10 8"/>
+    <text x="1432" y="140" font-size="40" fill="#fff">PASTEL</text><text x="1432" y="184" font-size="34" fill="#ffd36b">DO ZÉ</text>
+    ${crimpa}<path d="M1314 420 A118 118 0 0 1 1550 420 Z" fill="url(#massa)"/>
+    <path d="M1360 400 q20 -26 40 0 q20 -26 40 0 q20 -26 40 0" stroke="#e7b552" stroke-width="5" fill="none"/>
+    <text x="1432" y="510" font-size="44">2 pastéis</text>
+    <rect x="1300" y="534" width="264" height="78" rx="39" fill="#b3261e"/><text x="1432" y="588" font-size="46" fill="#fff">R$ 15</text>
+    <text x="1432" y="668" font-size="30" font-weight="700">só durante o jogo!</text>
+  </g>
+  <g fill="#3a1c00" font-weight="900">
+    <text x="64" y="800" font-size="54">Peça pelo app e ganhe o refri</text>
+    <text x="64" y="852" font-size="30" font-weight="700">entrega em 30 min · cupom <tspan fill="#b3261e">GOL15</tspan></text>
+  </g>${qr}`;
+}
+
+// ---------- montagem dos quadros ----------
+const ESCALA = 0.79;   // o jogo encolhe pra ~79% no anúncio em L
+const svg = c => `<svg class="q" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">${c}</svg>`;
+const quadros = {
+  jogo: () => svg(cena()),
+  comL: () => svg(anuncio() + `<g transform="scale(${ESCALA})">${cena()}</g>`),
+  // prévia do painel: quadro inteiro sem corte, com o anúncio escondido pintado de vermelho
+  previa: () => {
+    const kx = 1600 * ESCALA - 2, ky = 900 * ESCALA - 2;
+    return svg(anuncio() + `<g transform="scale(${ESCALA})">${cena()}</g>
+      <rect x="${kx}" width="${1600 - kx}" height="900" fill="rgb(230,40,30)" opacity=".45"/>
+      <rect y="${ky}" width="${kx}" height="${900 - ky}" fill="rgb(230,40,30)" opacity=".45"/>
+      <rect x="6" y="6" width="${kx - 6}" height="${ky - 6}" fill="none" stroke="#ff3b30" stroke-width="12"/>`);
+  }
+};
+const CONTROLES = `<div class="ctrl"><div class="barra"></div><div class="bt">
+  <svg viewBox="0 0 24 24"><rect x="5" y="4" width="4.5" height="16" rx="1"/><rect x="14.5" y="4" width="4.5" height="16" rx="1"/></svg>
+  <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+  <span class="vivo">AO VIVO</span>
+  <span class="dir">
+    <svg viewBox="0 0 24 24"><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3h-4l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.4 7.4 0 0 0 1.7 1L11 21h4l.4-2.6a7.4 7.4 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M3 3h7v2H5v5H3zm11 0h7v7h-2V5h-5zM3 14h2v5h5v2H3zm16 0h2v7h-7v-2h5z"/></svg>
+  </span></div></div>`;
+
+document.querySelectorAll("[data-quadro]").forEach(el => {
+  el.insertAdjacentHTML("afterbegin", quadros[el.dataset.quadro]());
+  if (el.classList.contains("player") && !el.hasAttribute("data-sem-controles")) el.insertAdjacentHTML("beforeend", CONTROLES);
+});
+document.body.dataset.tela = new URLSearchParams(location.search).get("tela") || "1";
+</script>
+</body>
+</html>
